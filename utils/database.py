@@ -45,7 +45,7 @@ class Database:
     
     async def is_saved(self, name):
         config = await self.col.find_one({'name':name})
-        return True if config else False
+        return bool(config)
      
     async def edit_config(self, name, value):
         await self.col.update_one({'name': name}, {'$set': {'value': value}})
@@ -67,7 +67,7 @@ class Database:
     
     async def is_in_playlist(self, id_):
         song = await self.playlist.find_one({'id':id_})
-        return True if song else False
+        return bool(song)
      
 
     async def get_song(self, id_):

@@ -71,14 +71,13 @@ class Downloader():
     async def pyro_dl(self, file_id):
         file_id_obj = FileId.decode(file_id)
         file_type = file_id_obj.file_type
-        mime_type = ""
-        date = 0
         file_name = ""
 
         directory, file_name = os.path.split(file_name)
         if not os.path.isabs(file_name):
             directory = self.client.PARENT_DIR / (directory or DEFAULT_DOWNLOAD_DIR)
         if not file_name:
+            mime_type = ""
             guessed_extension = self.client.guess_extension(mime_type)
 
             if file_type in PHOTO_TYPES:
@@ -96,12 +95,9 @@ class Downloader():
             else:
                 extension = ".unknown"
 
-            file_name = "{}_{}_{}{}".format(
-                FileType(file_id_obj.file_type).name.lower(),
-                datetime.fromtimestamp(date or time.time()).strftime("%Y-%m-%d_%H-%M-%S"),
-                self.client.rnd_id(),
-                extension
-            )
+            date = 0
+            file_name = f'{FileType(file_id_obj.file_type).name.lower()}_{datetime.fromtimestamp(date or time.time()).strftime("%Y-%m-%d_%H-%M-%S")}_{self.client.rnd_id()}{extension}'
+
         final_file_path = os.path.abspath(re.sub("\\\\", "/", os.path.join(directory, file_name)))
         os.makedirs(directory, exist_ok=True)
         downloaderr = self.handle_download(file_id_obj, final_file_path)

@@ -52,7 +52,7 @@ async def set_heroku_var(client, message):
         m = await message.reply("Checking config vars..")
         if " " in message.text:
             cmd, env = message.text.split(" ", 1)
-            if  not "=" in env:
+            if "=" not in env:
                 await m.edit("You should specify the value for env.\nExample: /env CHAT=-100213658211")
                 return
             var, value = env.split("=", 1)
@@ -61,7 +61,7 @@ async def set_heroku_var(client, message):
             return
 
         if Config.DATABASE_URI and var in ["STARTUP_STREAM", "CHAT", "LOG_GROUP", "REPLY_MESSAGE", "DELAY", "RECORDING_DUMP"]:      
-            await m.edit("Mongo DB Found, Setting up config vars...") 
+            await m.edit("Mongo DB Found, Setting up config vars...")
             if not value:
                 await m.edit(f"No value for env specified. Trying to delete env {var}.")
                 if var in ["STARTUP_STREAM", "CHAT", "DELAY"]:
@@ -69,42 +69,37 @@ async def set_heroku_var(client, message):
                     return
                 await edit_config(var, False)
                 await m.edit(f"Sucessfully deleted {var}")
-           
-                return
+
             else:
                 if var in ["CHAT", "LOG_GROUP", "RECORDING_DUMP"]:
                     try:
                         value=int(value)
                     except:
                         await m.edit("You should give me a chat id . It should be an interger.")
-        
+
                         return
                     if var == "CHAT":
                         Config.ADMIN_CACHE=False
-                        Config.CHAT=int(value)
-                    await edit_config(var, int(value))
-                    await m.edit(f"Succesfully changed {var} to {value}")
-    
-                    return
-                else:
-                    if var == "STARTUP_STREAM":
-                        Config.STREAM_SETUP=False
-                    await edit_config(var, value)
-                    await m.edit(f"Succesfully changed {var} to {value}")
-                    return
+                        Config.CHAT = value
+                elif var == "STARTUP_STREAM":
+                    Config.STREAM_SETUP=False
+                await edit_config(var, value)
+                await m.edit(f"Succesfully changed {var} to {value}")
+
+            return
         else:
             if not Config.HEROKU_APP:
                 buttons = [[InlineKeyboardButton('Heroku API_KEY', url='https://dashboard.heroku.com/account/applications/authorizations/new'), InlineKeyboardButton('🗑 Close', callback_data='close'),]]
                 await m.edit(
                     text="No heroku app found, this command needs the following heroku vars to be set.\n\n1. <code>HEROKU_API_KEY</code>: Your heroku account api key.\n2. <code>HEROKU_APP_NAME</code>: Your heroku app name.", 
                     reply_markup=InlineKeyboardMarkup(buttons)) 
-                return     
+                return
             config = Config.HEROKU_APP.config()
             if not value:
                 await m.edit(f"No value for env specified. Trying to delete env {var}.")
                 if var in ["STARTUP_STREAM", "CHAT", "DELAY", "API_ID", "API_HASH", "BOT_TOKEN", "SESSION_STRING", "ADMINS"]:
                     await m.edit("These are mandatory vars and cannot be deleted.")
-    
+
                     return
                 if var in config:
                     await m.edit(f"Sucessfully deleted {var}")
@@ -123,7 +118,7 @@ async def set_heroku_var(client, message):
             if var in config:
                 await m.edit(f"Variable already found. Now edited to {value}")
             else:
-                await m.edit(f"Variable not found, Now setting as new var.")
+                await m.edit("Variable not found, Now setting as new var.")
             await m.edit(f"Succesfully set {var} with value {value}, Now Restarting to take effect of changes...")
             if Config.DATABASE_URI:
                 msg = {"msg_id":m.message_id, "chat_id":m.chat.id}
@@ -155,7 +150,7 @@ async def clear_play_list(client, m: Message):
         k = await m.reply("Playlist is empty.")  
         return
     Config.playlist.clear()
-    k=await m.reply_text(f"Playlist Cleared.")
+    k = await m.reply_text("Playlist Cleared.")
     await clear_db_playlist(all=True)
 
     
@@ -207,21 +202,20 @@ def stop_and_restart():
 
 async def get_playlist_str():
     if not Config.playlist:
-        pl = f"🔈 Playlist is empty.)ㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤ"
-    else:
-        if len(Config.playlist)>=25:
-            tplaylist=Config.playlist[:25]
-            pl=f"Listing first 25 songs of total {len(Config.playlist)} songs.\n"
-            pl += f"▶️ **Playlist**: ㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤ\n" + "\n".join([
-                f"**{i}**. **🎸{x[1]}**\n   👤**Requested by:** {x[4]}"
-                for i, x in enumerate(tplaylist)
-                ])
-            tplaylist.clear()
-        else:
-            pl = f"▶️ **Playlist**: ㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤ\n" + "\n".join([
-                f"**{i}**. **🎸{x[1]}**\n   👤**Requested by:** {x[4]}\n"
-                for i, x in enumerate(Config.playlist)
+        pl = "🔈 Playlist is empty.)ㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤ"
+    elif len(Config.playlist)>=25:
+        tplaylist=Config.playlist[:25]
+        pl=f"Listing first 25 songs of total {len(Config.playlist)} songs.\n"
+        pl += f"▶️ **Playlist**: ㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤ\n" + "\n".join([
+            f"**{i}**. **🎸{x[1]}**\n   👤**Requested by:** {x[4]}"
+            for i, x in enumerate(tplaylist)
             ])
+        tplaylist.clear()
+    else:
+        pl = f"▶️ **Playlist**: ㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤ\n" + "\n".join([
+            f"**{i}**. **🎸{x[1]}**\n   👤**Requested by:** {x[4]}\n"
+            for i, x in enumerate(Config.playlist)
+        ])
     return pl
 
 

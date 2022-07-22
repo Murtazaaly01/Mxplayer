@@ -53,18 +53,12 @@ from utils import (
 )
 
 async def is_reply(_, client, message):
-    if Config.REPLY_PM:
-        return True
-    else:
-        return False
+    return bool(Config.REPLY_PM)
 reply_filter=filters.create(is_reply)
 
 DUMBED=[]
 async def dumb_it(_, client, message):
-    if Config.RECORDING_DUMP and Config.LISTEN:
-        return True
-    else:
-        return False
+    return bool(Config.RECORDING_DUMP and Config.LISTEN)
 rec_filter=filters.create(dumb_it)
 
 @Client.on_message(reply_filter & filters.private & ~filters.bot & filters.incoming & ~filters.service & ~filters.me & ~filters.chat([777000, 454000]))
@@ -77,8 +71,7 @@ async def reply(client, message):
             result_id=inline.results[0].id,
             hide_via=True
             )
-        old=Config.msg.get(message.chat.id)
-        if old:
+        if old := Config.msg.get(message.chat.id):
             await client.delete_messages(message.chat.id, [old["msg"], old["s"]])
         Config.msg[message.chat.id]={"msg":m.updates[1].message.id, "s":message.message_id}
     except BotInlineDisabled:
@@ -86,7 +79,6 @@ async def reply(client, message):
         await message.reply(f"{Config.REPLY_MESSAGE}\n\n<b>You can't use this bot in your group, for that you have to make your own bot from the [SOURCE CODE](https://github.com/subinps/VCPlayerBot) below.</b>", disable_web_page_preview=True)
     except Exception as e:
         LOGGER.error(e, exc_info=True)
-        pass
 
 
 @Client.on_message(filters.private & filters.media & filters.me & rec_filter)
@@ -97,22 +89,21 @@ async def dumb_to_log(client, message):
     if message.audio and message.audio.file_name == "record.ogg":
         await message.copy(int(Config.RECORDING_DUMP))
         DUMBED.append("audio")
-    if Config.IS_VIDEO_RECORD:
-        if len(DUMBED) == 2:
-            DUMBED.clear()
-            Config.LISTEN=False
-    else:
-        if len(DUMBED) == 1:
-            DUMBED.clear()
-            Config.LISTEN=False
+    if (
+        Config.IS_VIDEO_RECORD
+        and len(DUMBED) == 2
+        or not Config.IS_VIDEO_RECORD
+        and len(DUMBED) == 1
+    ):
+        DUMBED.clear()
+        Config.LISTEN=False
 
     
 @Client.on_message(filters.service & filters.chat(Config.CHAT))
 async def service_msg(client, message):
     if message.service == 'voice_chat_started':
         Config.IS_ACTIVE=True
-        k=scheduler.get_job(str(Config.CHAT), jobstore=None) #scheduled records
-        if k:
+        if k := scheduler.get_job(str(Config.CHAT), jobstore=None):
             await start_record_stream()
             LOGGER.info("Resuming recording..")
         elif Config.WAS_RECORDING:
@@ -144,8 +135,6 @@ async def service_msg(client, message):
             Config.WAS_RECORDING=True
             await stop_recording()
         await sync_to_db()
-    else:
-        pass
 
 @Client.on_raw_update()
 async def handle_raw_updates(client: Client, update: Update, user: dict, chat: dict):
@@ -203,10 +192,7 @@ async def handle_raw_updates(client: Client, update: Update, user: dict, chat: d
                 await stop_recording()
                 LOGGER.warning("Recording was ended by user, hence stopping the schedules.")
                 return
-            if call.schedule_date:
-                Config.HAS_SCHEDULE=True
-            else:
-                Config.HAS_SCHEDULE=False
+            Config.HAS_SCHEDULE = bool(call.schedule_date)
         await sync_to_db()
  
 @group_call.on_raw_update()
@@ -216,8 +202,7 @@ async def handler(client: PyTgCalls, update: Update):
         if Config.EDIT_TITLE:
             await edit_title()
         who=await group_call.get_participants(Config.CHAT)
-        you=list(filter(lambda k:k.user_id == Config.USER_ID, who))
-        if you:
+        if you := list(filter(lambda k: k.user_id == Config.USER_ID, who)):
             for me in you:
                 if me.volume:
                     Config.VOLUME=round(int(me.volume))
@@ -227,11 +212,9 @@ async def handler(client: PyTgCalls, update: Update):
         Config.DUR['PAUSE'] = time.time()
         Config.PAUSE=True
     elif isinstance(update, ResumedStream):
-        pause=Config.DUR.get('PAUSE')
-        if pause:
+        if pause := Config.DUR.get('PAUSE'):
             diff = time.time() - pause
-            start=Config.DUR.get('TIME')
-            if start:
+            if start := Config.DUR.get('TIME'):
                 Config.DUR['TIME']=start+diff
         Config.PAUSE=False
     elif isinstance(update, MutedStream):
@@ -243,31 +226,29 @@ async def handler(client: PyTgCalls, update: Update):
 
 @group_call.on_stream_end()
 async def handler(client: PyTgCalls, update: Update):
-    if isinstance(update, StreamAudioEnded) or isinstance(update, StreamVideoEnded):
-        if not Config.STREAM_END.get("STATUS"):
-            Config.STREAM_END["STATUS"]=str(update)
-            if Config.STREAM_LINK and len(Config.playlist) == 0:
-                if Config.IS_LOOP:
-                    await stream_from_link(Config.STREAM_LINK)
-                else:
-                    await leave_call()
-            elif not Config.playlist:
-                if Config.IS_LOOP:
-                    await start_stream()
-                else:
-                    await leave_call()
+    if not isinstance(update, StreamAudioEnded) and not isinstance(
+        update, StreamVideoEnded
+    ):
+        return
+    if not Config.STREAM_END.get("STATUS"):
+        Config.STREAM_END["STATUS"]=str(update)
+        if Config.STREAM_LINK and len(Config.playlist) == 0:
+            if Config.IS_LOOP:
+                await stream_from_link(Config.STREAM_LINK)
             else:
-                await skip()          
-            await sleep(15) #wait for max 15 sec
-            try:
-                del Config.STREAM_END["STATUS"]
-            except:
-                pass
+                await leave_call()
+        elif not Config.playlist:
+            if Config.IS_LOOP:
+                await start_stream()
+            else:
+                await leave_call()
         else:
-            try:
-                del Config.STREAM_END["STATUS"]
-            except:
-                pass
+            await skip()
+        await sleep(15) #wait for max 15 sec
+    try:
+        del Config.STREAM_END["STATUS"]
+    except:
+        pass
 
        
 

@@ -28,173 +28,169 @@ except ModuleNotFoundError:
     os.execl(sys.executable, sys.executable, *sys.argv)
 
 
+
+
 class Config:
-    #Telegram API Stuffs
-    load_dotenv()  # load enviroment variables from .env file
-    ADMIN = os.environ.get("ADMINS", '')
-    SUDO = [int(admin) for admin in (ADMIN).split()] # Exclusive for heroku vars configuration.
-    ADMINS = [int(admin) for admin in (ADMIN).split()] #group admins will be appended to this list.
-    API_ID = int(os.environ.get("API_ID", ''))
-    API_HASH = os.environ.get("API_HASH", "")
-    BOT_TOKEN = os.environ.get("BOT_TOKEN", "")     
-    SESSION = os.environ.get("SESSION_STRING", "")
+   #Telegram API Stuffs
+   load_dotenv()  # load enviroment variables from .env file
+   ADMIN = os.environ.get("ADMINS", '')
+   SUDO = [int(admin) for admin in (ADMIN).split()] # Exclusive for heroku vars configuration.
+   ADMINS = [int(admin) for admin in (ADMIN).split()] #group admins will be appended to this list.
+   API_ID = int(os.environ.get("API_ID", ''))
+   API_HASH = os.environ.get("API_HASH", "")
+   BOT_TOKEN = os.environ.get("BOT_TOKEN", "")
+   SESSION = os.environ.get("SESSION_STRING", "")
 
-    #Stream Chat and Log Group
-    CHAT = int(os.environ.get("CHAT", ""))
-    LOG_GROUP=os.environ.get("LOG_GROUP", "")
+   #Stream Chat and Log Group
+   CHAT = int(os.environ.get("CHAT", ""))
+   LOG_GROUP=os.environ.get("LOG_GROUP", "")
 
-    #Stream 
-    STREAM_URL=os.environ.get("STARTUP_STREAM", "https://www.youtube.com/watch?v=zcrUCvBD16k")
-   
-    #Database
-    DATABASE_URI=os.environ.get("DATABASE_URI", None)
-    DATABASE_NAME=os.environ.get("DATABASE_NAME", "VCPlayerBot")
+   #Stream 
+   STREAM_URL=os.environ.get("STARTUP_STREAM", "https://www.youtube.com/watch?v=zcrUCvBD16k")
 
-
-    #heroku
-    API_KEY=os.environ.get("HEROKU_API_KEY", None)
-    APP_NAME=os.environ.get("HEROKU_APP_NAME", None)
+   #Database
+   DATABASE_URI=os.environ.get("DATABASE_URI", None)
+   DATABASE_NAME=os.environ.get("DATABASE_NAME", "VCPlayerBot")
 
 
-    #Optional Configuration
-    SHUFFLE=is_enabled(os.environ.get("SHUFFLE", 'True'))
-    ADMIN_ONLY=is_enabled(os.environ.get("ADMIN_ONLY", "False"))
-    REPLY_MESSAGE=os.environ.get("REPLY_MESSAGE", False)
-    EDIT_TITLE = os.environ.get("EDIT_TITLE", True)
-    #others
-    
-    RECORDING_DUMP=os.environ.get("RECORDING_DUMP", False)
-    RECORDING_TITLE=os.environ.get("RECORDING_TITLE", False)
-    TIME_ZONE = os.environ.get("TIME_ZONE", "Asia/Kolkata")    
-    IS_VIDEO=is_enabled(os.environ.get("IS_VIDEO", 'True'))
-    IS_LOOP=is_enabled(os.environ.get("IS_LOOP", 'True'))
-    DELAY=int(os.environ.get("DELAY", '10'))
-    PORTRAIT=is_enabled(os.environ.get("PORTRAIT", 'False'))
-    IS_VIDEO_RECORD=is_enabled(os.environ.get("IS_VIDEO_RECORD", 'True'))
-    DEBUG=is_enabled(os.environ.get("DEBUG", 'False'))
-    PTN=is_enabled(os.environ.get("PTN", "False"))
-
-    #Quality vars
-    E_BITRATE=os.environ.get("BITRATE", False)
-    E_FPS=os.environ.get("FPS", False)
-    CUSTOM_QUALITY=os.environ.get("QUALITY", "100")
-
-    #Search filters for cplay
-    FILTERS =  [filter.lower() for filter in (os.environ.get("FILTERS", "video document")).split(" ")]
+   #heroku
+   API_KEY=os.environ.get("HEROKU_API_KEY", None)
+   APP_NAME=os.environ.get("HEROKU_APP_NAME", None)
 
 
-    #Dont touch these, these are not for configuring player
-    GET_FILE={}
-    DATA={}
-    STREAM_END={}
-    SCHEDULED_STREAM={}
-    DUR={}
-    msg = {}
+   #Optional Configuration
+   SHUFFLE=is_enabled(os.environ.get("SHUFFLE", 'True'))
+   ADMIN_ONLY=is_enabled(os.environ.get("ADMIN_ONLY", "False"))
+   REPLY_MESSAGE=os.environ.get("REPLY_MESSAGE", False)
+   EDIT_TITLE = os.environ.get("EDIT_TITLE", True)
+   #others
 
-    SCHEDULE_LIST=[]
-    playlist=[]
-    CONFIG_LIST = ["ADMINS", "IS_VIDEO", "IS_LOOP", "REPLY_PM", "ADMIN_ONLY", "SHUFFLE", "EDIT_TITLE", "CHAT", 
-    "SUDO", "REPLY_MESSAGE", "STREAM_URL", "DELAY", "LOG_GROUP", "SCHEDULED_STREAM", "SCHEDULE_LIST", 
-    "IS_VIDEO_RECORD", "IS_RECORDING", "WAS_RECORDING", "RECORDING_TITLE", "PORTRAIT", "RECORDING_DUMP", "HAS_SCHEDULE", 
-    "CUSTOM_QUALITY"]
+   RECORDING_DUMP=os.environ.get("RECORDING_DUMP", False)
+   RECORDING_TITLE=os.environ.get("RECORDING_TITLE", False)
+   TIME_ZONE = os.environ.get("TIME_ZONE", "Asia/Kolkata")
+   IS_VIDEO=is_enabled(os.environ.get("IS_VIDEO", 'True'))
+   IS_LOOP=is_enabled(os.environ.get("IS_LOOP", 'True'))
+   DELAY=int(os.environ.get("DELAY", '10'))
+   PORTRAIT=is_enabled(os.environ.get("PORTRAIT", 'False'))
+   IS_VIDEO_RECORD=is_enabled(os.environ.get("IS_VIDEO_RECORD", 'True'))
+   DEBUG=is_enabled(os.environ.get("DEBUG", 'False'))
+   PTN=is_enabled(os.environ.get("PTN", "False"))
 
-    STARTUP_ERROR=None
+   #Quality vars
+   E_BITRATE=os.environ.get("BITRATE", False)
+   E_FPS=os.environ.get("FPS", False)
+   CUSTOM_QUALITY=os.environ.get("QUALITY", "100")
 
-    ADMIN_CACHE=False
-    CALL_STATUS=False
-    YPLAY=False
-    YSTREAM=False
-    CPLAY=False
-    STREAM_SETUP=False
-    LISTEN=False
-    STREAM_LINK=False
-    IS_RECORDING=False
-    WAS_RECORDING=False
-    PAUSE=False
-    MUTED=False
-    HAS_SCHEDULE=None
-    IS_ACTIVE=None
-    VOLUME=100
-    CURRENT_CALL=None
-    BOT_USERNAME=None
-    USER_ID=None
-
-    if LOG_GROUP:
-        LOG_GROUP=int(LOG_GROUP)
-    else:
-        LOG_GROUP=None
-    if not API_KEY or \
-       not APP_NAME:
-       HEROKU_APP=None
-    else:
-       HEROKU_APP=heroku3.from_key(API_KEY).apps()[APP_NAME]
+   #Search filters for cplay
+   FILTERS =  [filter.lower() for filter in (os.environ.get("FILTERS", "video document")).split(" ")]
 
 
-    if EDIT_TITLE in ["NO", 'False']:
-        EDIT_TITLE=False
-        LOGGER.info("Title Editing turned off")
-    if REPLY_MESSAGE:
-        REPLY_MESSAGE=REPLY_MESSAGE
-        REPLY_PM=True
-        LOGGER.info("Reply Message Found, Enabled PM MSG")
-    else:
-        REPLY_MESSAGE=False
-        REPLY_PM=False
+   #Dont touch these, these are not for configuring player
+   GET_FILE={}
+   DATA={}
+   STREAM_END={}
+   SCHEDULED_STREAM={}
+   DUR={}
+   msg = {}
 
-    if E_BITRATE:
-       try:
-          BITRATE=int(E_BITRATE)
-       except:
-          LOGGER.error("Invalid bitrate specified.")
-          E_BITRATE=False
-          BITRATE=48000
-       if not BITRATE >= 48000:
-          BITRATE=48000
-    else:
-       BITRATE=48000
-    
-    if E_FPS:
-       try:
-          FPS=int(E_FPS)
-       except:
-          LOGGER.error("Invalid FPS specified")
-          E_FPS=False
-       if not FPS >= 30:
-          FPS=30
-    else:
-       FPS=30
-    try:
-       CUSTOM_QUALITY=int(CUSTOM_QUALITY)
-       if CUSTOM_QUALITY > 100:
-          CUSTOM_QUALITY = 100
-          LOGGER.warning("maximum quality allowed is 100, invalid quality specified. Quality set to 100")
-       elif CUSTOM_QUALITY < 10:
-          LOGGER.warning("Minimum Quality allowed is 10., Qulaity set to 10")
-          CUSTOM_QUALITY = 10
-       if  66.9  < CUSTOM_QUALITY < 100:
-          if not E_BITRATE:
-             BITRATE=48000
-       elif 50 < CUSTOM_QUALITY < 66.9:
-          if not E_BITRATE:
-             BITRATE=36000
-       else:
-          if not E_BITRATE:
-             BITRATE=24000
-    except:
-       if CUSTOM_QUALITY.lower() == 'high':
-          CUSTOM_QUALITY=100
-       elif CUSTOM_QUALITY.lower() == 'medium':
-          CUSTOM_QUALITY=66.9
-       elif CUSTOM_QUALITY.lower() == 'low':
-          CUSTOM_QUALITY=50
-       else:
-          LOGGER.warning("Invalid QUALITY specified.Defaulting to High.")
-          CUSTOM_QUALITY=100
+   SCHEDULE_LIST=[]
+   playlist=[]
+   CONFIG_LIST = ["ADMINS", "IS_VIDEO", "IS_LOOP", "REPLY_PM", "ADMIN_ONLY", "SHUFFLE", "EDIT_TITLE", "CHAT", 
+   "SUDO", "REPLY_MESSAGE", "STREAM_URL", "DELAY", "LOG_GROUP", "SCHEDULED_STREAM", "SCHEDULE_LIST", 
+   "IS_VIDEO_RECORD", "IS_RECORDING", "WAS_RECORDING", "RECORDING_TITLE", "PORTRAIT", "RECORDING_DUMP", "HAS_SCHEDULE", 
+   "CUSTOM_QUALITY"]
+
+   STARTUP_ERROR=None
+
+   ADMIN_CACHE=False
+   CALL_STATUS=False
+   YPLAY=False
+   YSTREAM=False
+   CPLAY=False
+   STREAM_SETUP=False
+   LISTEN=False
+   STREAM_LINK=False
+   IS_RECORDING=False
+   WAS_RECORDING=False
+   PAUSE=False
+   MUTED=False
+   HAS_SCHEDULE=None
+   IS_ACTIVE=None
+   VOLUME=100
+   CURRENT_CALL=None
+   BOT_USERNAME=None
+   USER_ID=None
+
+   LOG_GROUP = int(LOG_GROUP) if LOG_GROUP else None
+   if not API_KEY or \
+      not APP_NAME:
+      HEROKU_APP=None
+   else:
+      HEROKU_APP=heroku3.from_key(API_KEY).apps()[APP_NAME]
+
+
+   if EDIT_TITLE in ["NO", 'False']:
+       EDIT_TITLE=False
+       LOGGER.info("Title Editing turned off")
+   if REPLY_MESSAGE:
+       REPLY_MESSAGE=REPLY_MESSAGE
+       REPLY_PM=True
+       LOGGER.info("Reply Message Found, Enabled PM MSG")
+   else:
+       REPLY_MESSAGE=False
+       REPLY_PM=False
+
+   if E_BITRATE:
+      try:
+         BITRATE=int(E_BITRATE)
+      except:
+         LOGGER.error("Invalid bitrate specified.")
+         E_BITRATE=False
+         BITRATE=48000
+      BITRATE = max(BITRATE, 48000)
+   else:
+      BITRATE=48000
+
+   if E_FPS:
+      try:
+         FPS=int(E_FPS)
+      except:
+         LOGGER.error("Invalid FPS specified")
+         E_FPS=False
+      FPS = max(FPS, 30)
+   else:
+      FPS=30
+   try:
+      CUSTOM_QUALITY=int(CUSTOM_QUALITY)
+      if CUSTOM_QUALITY > 100:
+         CUSTOM_QUALITY = 100
+         LOGGER.warning("maximum quality allowed is 100, invalid quality specified. Quality set to 100")
+      elif CUSTOM_QUALITY < 10:
+         LOGGER.warning("Minimum Quality allowed is 10., Qulaity set to 10")
+         CUSTOM_QUALITY = 10
+      if 66.9  < CUSTOM_QUALITY < 100:
+         if not E_BITRATE:
+            BITRATE=48000
+      elif 50 < CUSTOM_QUALITY < 66.9:
+         if not E_BITRATE:
+            BITRATE=36000
+      elif not E_BITRATE:
+         BITRATE=24000
+   except:
+      if CUSTOM_QUALITY.lower() == 'high':
+         CUSTOM_QUALITY=100
+      elif CUSTOM_QUALITY.lower() == 'medium':
+         CUSTOM_QUALITY=66.9
+      elif CUSTOM_QUALITY.lower() == 'low':
+         CUSTOM_QUALITY=50
+      else:
+         LOGGER.warning("Invalid QUALITY specified.Defaulting to High.")
+         CUSTOM_QUALITY=100
 
 
 
-    #help strings 
-    PLAY_HELP="""
+   #help strings 
+   PLAY_HELP="""
 __You can play using any of these options__
 
 1. Play a video from a YouTube link.
@@ -228,7 +224,7 @@ To set up the files from a channel as STARTUP_STREAM, so that the files will be 
 Note that for public channels you should use username of channels along with '@' and for private channels you should use channel id.
 For private channels , make sure both the bot and USER account is a member of channel.__
 """
-    SETTINGS_HELP="""
+   SETTINGS_HELP="""
 **You can easily customize you player as per you needs. The following configurations are available:**
 
 🔹Command: **/settings**
@@ -252,7 +248,7 @@ if disabled, video files will be played as audio.__
 You can  set up a custom reply message using `REPLY_MESSAGE` confug.__
 
 """
-    SCHEDULER_HELP="""
+   SCHEDULER_HELP="""
 __VCPlayer allows you to schedule a stream. 
 This means you can schedule a stream for a future date and on the scheduled date, stream will be played automatically.
 At present you can schedule a stream for even one year!!. Make sure you have set up a databse, else you will loose your schedules whenever the player restarts. __
@@ -272,7 +268,7 @@ __Cancel a schedule by its schedule id, You can get the schedule id using /slist
 Command: **/cancelall**
 __Cancel all the scheduled streams__
 """
-    RECORDER_HELP="""
+   RECORDER_HELP="""
 __With VCPlayer you can easily record all your video chats.
 By default telegram allows you to record for a maximum duration of 4 hours. 
 An attempt to overcome this limit has been made by automatically restarting the recording after  4 hours__
@@ -294,7 +290,7 @@ Setup using `RECORDING_DUMP` config.__
 
 """
 
-    CONTROL_HELP="""
+   CONTROL_HELP="""
 __VCPlayer allows you to control your streams easily__
 1. Skip a song.
 Command: **/skip**
@@ -334,7 +330,7 @@ Command: **/playlist**
 __Use /player to show with control buttons__
 """
 
-    ADMIN_HELP="""
+   ADMIN_HELP="""
 __VCPlayer allows to control admins, that is you can add admins and remove them easily.
 It is recommended to use a MongoDb database for better experience, else all you admins will get reset after restart.__
 
@@ -348,7 +344,7 @@ Command: **/refresh**
 __Refresh the admin list of chat__
 """
 
-    MISC_HELP="""
+   MISC_HELP="""
 Command: **/export**
 __VCPlayer allows you to export your current playlist for future use.__
 __A json file will be sent to you and the same can be used along /import command.__
@@ -370,7 +366,7 @@ __Updates youe bot with latest changes__
 Tip: __You can easily change the CHAT config by adding the user account and bot account to any other group and any command in new group__
 
 """
-    ENV_HELP="""
+   ENV_HELP="""
 **These are the configurable vars available and you can set each one of them using /env command**
 
 

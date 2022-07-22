@@ -53,7 +53,7 @@ async def add_admin(client, message):
                 user_id=int(user)
                 user=await client.get_users(user_id)
             except:
-                k=await message.reply(f"You should give a user id or his username with @.")
+                k = await message.reply("You should give a user id or his username with @.")
                 await delete_messages([message, k])
                 return
     else:
@@ -96,14 +96,14 @@ async def remove_admin(client, message):
                 user_id=int(user)
                 user=await client.get_users(user_id)
             except:
-                k = await message.reply(f"You should give a user id or his username with @.")
+                k = await message.reply("You should give a user id or his username with @.")
                 await delete_messages([message, k])
                 return
     else:
         k = await message.reply("No user specified, reply to a user with /vcdemote or pass a users user id or username.")
         await delete_messages([message, k])
         return
-    if not user_id in Config.ADMINS:
+    if user_id not in Config.ADMINS:
         k = await message.reply("This user is not an admin yet.")
         await delete_messages([message, k])
         return
